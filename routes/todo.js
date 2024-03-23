@@ -5,7 +5,7 @@ const todoRouter = express.Router();
 
 todoRouter.get("/", async(req, res) => {
     try{
-        const result = await query('SELECT * FROM task' );
+        const result = await query('SELECT * FROM task ORDER BY id ASC' );
         const rows = result.rows ? result.rows : [];
         res.status(200).json(rows)
     }catch(error){
@@ -31,6 +31,18 @@ todoRouter.delete('/delete/:id',async(req, res) => {
     const id = Number(req.params.id);
     try{
         const result = await query('DELETE FROM task WHERE id = $1',[id]);
+        res.status(200).json({id:id})
+    }catch(error){
+        console.log(error)
+        res.statusMessage = error
+        res.status(500).json({error: error})
+    }
+})
+
+todoRouter.put('/complete/:id',async(req, res) => {
+    const id = Number(req.params.id);
+    try{
+        const result = await query('UPDATE task SET is_completed = true WHERE id = $1',[id]);
         res.status(200).json({id:id})
     }catch(error){
         console.log(error)
